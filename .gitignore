@@ -1,0 +1,16 @@
+node_modules/
+dist/
+server/dist/
+client/dist/
+server/public/
+data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+.env
+.env.local
+.env.production
+*.log
+*.tsbuildinfo
+.DS_Store
