@@ -361,4 +361,18 @@ test("5. Mobile-number-only claim opens account, allows return access, and block
   const me = await api("/api/player-claim/me", { token: pToken });
   assert.equal(me.status, 200);
   assert.equal((me.json?.player as Record<string, unknown>).base_price, 2000);
+
+  // Admin bulk/inline category update changes NB3-03 to Category B
+  const cats = ((await api("/api/admin/categories", { token: adminToken })).json?.categories || []) as Array<{
+    id: number;
+    name: string;
+  }>;
+  const catB = cats.find((c) => c.name === "Category B")!;
+  const patchRes = await api("/api/admin/players/bulk-category", {
+    method: "PATCH",
+    token: adminToken,
+    body: JSON.stringify({ playerIds: [3], categoryId: catB.id }),
+  });
+  assert.equal(patchRes.status, 200);
+  assert.equal(patchRes.json?.updated, 1);
 });

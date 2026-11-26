@@ -13,4 +13,6 @@ data/
 .env.production
 *.log
 *.tsbuildinfo
+*.zip
+hostinger-deploy/
 .DS_Store

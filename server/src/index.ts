@@ -144,11 +144,7 @@ export function createApp(options: { seedRealPlayers?: boolean; dbPath?: string;
   return { app, server, io, db };
 }
 
-const isMain =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
-
-if (isMain) {
+export function startServer() {
   const { server } = createApp();
   server.listen(config.port, () => {
     console.log(`\n🏆 YKSG NB-3 Player Auction Server running on http://localhost:${config.port}`);
@@ -163,4 +159,13 @@ if (isMain) {
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
+  return server;
+}
+
+const isMain =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isMain) {
+  startServer();
 }

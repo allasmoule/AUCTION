@@ -2,11 +2,21 @@
   "name": "yksg-nb3-player-auction",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "main": "app.js",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "description": "YKSG NB-3 Player Auction Management System",
   "scripts": {
     "dev": "concurrently -n SERVER,CLIENT -c yellow,cyan \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "build": "npm --prefix client run build && npm --prefix server run build",
-    "start": "node server/dist/index.js",
+    "start": "node app.js",
+    "package:hostinger": "node scripts/package-hostinger.mjs",
     "test": "npm --prefix server test"
   },
   "devDependencies": {

@@ -75,7 +75,49 @@ export function AdminPlayersTab({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const [importFile, setImportFile] = useState<File | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [bulkCategoryId, setBulkCategoryId] = useState(String(categories[0]?.id || 1));
   const [busy, setBusy] = useState(false);
+
+  const handleInlineCategoryChange = async (playerId: number, nextCatId: number) => {
+    try {
+      await apiRequest("/api/admin/players/bulk-category", {
+        method: "PATCH",
+        body: JSON.stringify({ playerIds: [playerId], categoryId: nextCatId }),
+      });
+      const cat = categories.find((c) => c.id === nextCatId);
+      toast({
+        variant: "success",
+        title: "Category Updated",
+        description: cat ? `Assigned ${cat.name} (${formatBDT(cat.base_price)})` : undefined,
+      });
+      await onRefresh();
+    } catch (err) {
+      toast({ variant: "destructive", title: "Update failed", description: err instanceof Error ? err.message : "Error" });
+    }
+  };
+
+  const handleBulkCategoryApply = async () => {
+    if (selectedIds.length === 0) return;
+    setBusy(true);
+    try {
+      await apiRequest("/api/admin/players/bulk-category", {
+        method: "PATCH",
+        body: JSON.stringify({ playerIds: selectedIds, categoryId: Number(bulkCategoryId) }),
+      });
+      toast({
+        variant: "success",
+        title: "Bulk Category Updated",
+        description: `Updated ${selectedIds.length} player(s).`,
+      });
+      setSelectedIds([]);
+      await onRefresh();
+    } catch (err) {
+      toast({ variant: "destructive", title: "Bulk update failed", description: err instanceof Error ? err.message : "Error" });
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const openAddForm = () => {
     setEditingId(null);
@@ -463,13 +505,48 @@ export function AdminPlayersTab({
                 <option value="unsold">Unsold</option>
               </select>
             </div>
+
+            {selectedIds.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm">
+                <span className="font-semibold text-primary">{selectedIds.length} player(s) selected</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    value={bulkCategoryId}
+                    onChange={(e) => setBulkCategoryId(e.target.value)}
+                    className="h-9 rounded-lg border border-border bg-background px-3 text-sm"
+                  >
+                    {categories.map((c) => (
+                      <option key={c.id} value={String(c.id)}>
+                        {c.name} ({formatBDT(c.base_price)})
+                      </option>
+                    ))}
+                  </select>
+                  <Button size="sm" onClick={handleBulkCategoryApply} disabled={busy}>
+                    Assign Category
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
+                  <th className="py-2 pr-3 w-8">
+                    <input
+                      type="checkbox"
+                      checked={filtered.length > 0 && filtered.every((p) => selectedIds.includes(p.id))}
+                      onChange={(e) =>
+                        setSelectedIds(e.target.checked ? filtered.map((p) => p.id) : [])
+                      }
+                      className="h-4 w-4 accent-primary"
+                    />
+                  </th>
                   <th className="py-2 pr-3">Player</th>
-                  <th className="py-2 pr-3">Category</th>
+                  <th className="py-2 pr-3">Category (Quick Select)</th>
                   <th className="py-2 pr-3">Position</th>
                   <th className="py-2 pr-3">Contact / Room</th>
                   <th className="py-2 pr-3">Claim Status & Code</th>
@@ -481,6 +558,18 @@ export function AdminPlayersTab({
                 {filtered.map((p) => (
                   <tr key={p.id} className="border-b border-border/50">
                     <td className="py-2.5 pr-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(p.id)}
+                        onChange={(e) =>
+                          setSelectedIds((prev) =>
+                            e.target.checked ? [...prev, p.id] : prev.filter((id) => id !== p.id)
+                          )
+                        }
+                        className="h-4 w-4 accent-primary"
+                      />
+                    </td>
+                    <td className="py-2.5 pr-3">
                       <div className="flex items-center gap-2.5">
                         <PlayerAvatar src={p.photo_url} name={p.full_name} size="sm" />
                         <div>
@@ -490,8 +579,18 @@ export function AdminPlayersTab({
                       </div>
                     </td>
                     <td className="py-2.5 pr-3">
-                      <div className="font-medium">{p.category_name}</div>
-                      <div className="text-xs text-muted-foreground">{formatBDT(p.base_price)}</div>
+                      <select
+                        value={String(p.category_id)}
+                        disabled={p.auction_status === "live"}
+                        onChange={(e) => handleInlineCategoryChange(p.id, Number(e.target.value))}
+                        className="h-9 rounded-lg border border-border bg-background/80 px-2.5 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                      >
+                        {categories.map((c) => (
+                          <option key={c.id} value={String(c.id)}>
+                            {c.name} · {formatBDT(c.base_price)}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                     <td className="py-2.5 pr-3 text-xs">{p.position}</td>
                     <td className="py-2.5 pr-3 text-xs">

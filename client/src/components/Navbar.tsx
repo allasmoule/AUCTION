@@ -1,4 +1,4 @@
-import { Gavel, LogOut, Radio, Shield, Trophy, UserCheck, Users, Volume2, VolumeX } from "lucide-react";
+import { LogOut, Radio, Shield, Trophy, UserCheck, Users, Volume2, VolumeX } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -30,9 +30,11 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-xl">
       <div className="w-full px-4 sm:px-8 h-16 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-3 group shrink-0">
-          <div className="h-10 w-10 rounded-xl gradient-gold flex items-center justify-center shadow-gold">
-            <Gavel className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="YKSG NB-3 Crest"
+            className="h-11 w-11 object-contain drop-shadow-[0_0_12px_rgba(250,189,47,0.35)]"
+          />
           <div>
             <div className="font-display text-2xl tracking-wider leading-none text-foreground group-hover:text-primary transition-colors">
               YKSG <span className="text-primary">NB-3</span>

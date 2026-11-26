@@ -22,14 +22,16 @@ BACKUP_RETENTION_COUNT=24
 
 > **Important**: Set `DATA_DIR` to a persistent directory **outside** the Git deployment directory so re-deploys from GitHub never overwrite `auction.db` or uploaded photos.
 
-## 3. Hostinger Node.js App Setup
-1. Push this repository to GitHub (`git init`, `git add .`, `git commit`, `git push`).
-2. In Hostinger **hPanel → Websites → Node.js**:
-   - Connect your GitHub repository and branch (`main`).
+## 3. Hostinger Node.js App Setup (GitHub One-Click Deploy)
+1. Push this repository to GitHub (`git push`).
+2. In Hostinger **hPanel → Websites → Add Website → Node.js Web App**:
+   - Connect your GitHub repository (`allasmoule/AUCTION`) and branch (`main`).
    - **Node.js version**: 20.x or 22.x
-   - **Build command**: `npm install && npm --prefix server install && npm --prefix client install && npm run build`
-   - **Start command**: `npm start`
-3. Ensure SSL/HTTPS is enabled for your domain (e.g., `yourdomain.com` or `auction.yourdomain.com`). Socket.IO automatically uses WebSockets (`wss://`) with polling fallback.
+   - **Build command**: `npm install && npm run build`
+   - **Start command**: `npm start` (or entry file `app.js`)
+   - On first start, the app automatically initializes SQLite (`auction.db`), creates all 13 tables, creates the `super_admin` user, and seeds the 5 categories + 27 YKSG NB-3 players!
+3. Or for **Direct ZIP / Folder Upload**: run `npm run package:hostinger` locally and upload `yksg-nb3-hostinger-deploy.zip` (which includes `app.js`, compiled `server/dist`, compiled `server/public`, `package.json`, and a consistent snapshot of `data/auction.db` + `uploads/`).
+4. Ensure SSL/HTTPS is enabled for your domain. Socket.IO automatically uses WebSockets (`wss://`) with polling fallback.
 
 ## 4. Application URLs
 - `/` — Public Tournament Hub & Registered Roster

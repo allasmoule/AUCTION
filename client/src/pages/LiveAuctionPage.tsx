@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Award, Clock, Flame, Gavel, Maximize2, Minimize2, Radio, Sparkles, Trophy, Users } from "lucide-react";
+import { Award, Clock, Flame, Gavel, Maximize2, Minimize2, Sparkles, Trophy, Users } from "lucide-react";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { Badge } from "@/components/ui/primitives";
@@ -30,9 +30,11 @@ export function LiveAuctionPage() {
       {/* Broadcast Top Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-card/85 px-5 py-3.5 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl gradient-ember flex items-center justify-center shadow-lg">
-            <Radio className="h-5 w-5 text-white animate-pulse" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="YKSG NB-3 Crest"
+            className="h-12 w-12 object-contain drop-shadow-[0_0_12px_rgba(250,189,47,0.35)]"
+          />
           <div>
             <h1 className="font-display text-2xl sm:text-3xl tracking-wider leading-none">
               {state?.settings.auction_title || "YKSG NB-3 PLAYER AUCTION"} · <span className="text-primary">LIVE THEATRE</span>

@@ -501,6 +501,49 @@ router.put("/players/:id", uploadPlayerPhoto.single("photo"), (req, res) => {
   }
 });
 
+router.patch("/players/bulk-category", (req, res) => {
+  const schema = z.object({
+    playerIds: z.array(z.coerce.number().int().positive()).min(1),
+    categoryId: z.coerce.number().int().positive(),
+  });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid category assignment" });
+    return;
+  }
+
+  const db = getDb();
+  const category = db
+    .prepare("SELECT id, name, base_price FROM player_categories WHERE id = ?")
+    .get(parsed.data.categoryId) as { id: number; name: string; base_price: number } | undefined;
+  if (!category) {
+    res.status(404).json({ error: "Category not found" });
+    return;
+  }
+
+  const updated = db.transaction(() => {
+    const stmt = db.prepare(
+      "UPDATE players SET category_id = ?, updated_at = datetime('now') WHERE id = ? AND auction_status != 'live'"
+    );
+    let count = 0;
+    for (const pid of parsed.data.playerIds) {
+      const info = stmt.run(category.id, pid);
+      count += info.changes;
+    }
+
+    logActivity(db, {
+      ...actorFromReq(req),
+      actorUserId: req.user!.id,
+      action: "PLAYERS_CATEGORY_ASSIGNED",
+      details: { playerIds: parsed.data.playerIds, categoryId: category.id, categoryName: category.name },
+    });
+    return count;
+  }).immediate();
+
+  broadcastState(db, req.app.get("io"));
+  res.json({ ok: true, updated, category });
+});
+
 router.delete("/players/:id", (req, res) => {
   const playerId = Number(req.params.id);
   const db = getDb();

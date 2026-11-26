@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Lock, Shield, UserCheck, Users } from "lucide-react";
+import { Shield, UserCheck, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,9 +49,11 @@ export function LoginPage({ defaultRole = "team_manager" }: { defaultRole?: "sup
     <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md border-primary/30 shadow-glow">
         <CardHeader className="text-center space-y-2">
-          <div className="h-12 w-12 rounded-2xl gradient-gold mx-auto flex items-center justify-center shadow-gold">
-            <Lock className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="YKSG NB-3 Crest"
+            className="h-16 w-16 object-contain mx-auto drop-shadow-[0_0_16px_rgba(250,189,47,0.4)]"
+          />
           <CardTitle className="font-display text-4xl tracking-wider">YKSG NB-3 SIGN IN</CardTitle>
           <CardDescription>Select your account portal and enter your credentials</CardDescription>
         </CardHeader>

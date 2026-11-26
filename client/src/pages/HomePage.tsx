@@ -148,9 +148,16 @@ export function HomePage() {
           <div className="grid lg:grid-cols-12 gap-10 items-center">
             {/* Left Hero Copy */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-primary">
-                <Trophy className="h-4 w-4" />
-                YKSG NB-3 Tournament · Official Auction Arena 2026
+              <div className="flex items-center gap-4">
+                <img
+                  src="/logo.png"
+                  alt="YKSG NB-3 Official Crest"
+                  className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-[0_0_24px_rgba(250,189,47,0.4)] shrink-0"
+                />
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-primary">
+                  <Trophy className="h-4 w-4" />
+                  YKSG NB-3 Tournament · Official Auction Arena 2026
+                </div>
               </div>
 
               <h1 className="font-display text-6xl sm:text-7xl xl:text-8xl tracking-wide leading-[0.92] text-foreground">
